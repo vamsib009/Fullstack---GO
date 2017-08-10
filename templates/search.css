@@ -1,0 +1,56 @@
+body {
+    background: url('stm.jpg') no-repeat;
+    background-size: cover;
+    font-family: Arial;
+    color: black;
+    }
+#searchBar {
+  border : 1px solid #000000;
+  float: right;
+  font-size: 15px;
+  padding: 10px;
+  outline: none;
+  width: 250px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+#searchBtn{
+  border : 1px solid #000000;
+  float:right;
+  font-size: 15px;
+  padding: 10px;
+  background: #E5E3DE;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+#User {
+  border : 1px solid #000000;
+  font-size: 20px;
+  padding: 10px;
+  outline: none;
+  width: 250px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  margin-top: 250px;
+}
+#userBtn{
+  border : 1px solid #000000;
+  font-size: 20px;
+  padding: 10px;
+  font-weight: bold;
+  background:#E5E3DE;
+  cursor: pointer;
+  outline: none;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.container {
+  width: 500px;
+  height: 400px;
+  text-align: center;
+  margin: 0 auto;
+  border-radius: 4px
+}
