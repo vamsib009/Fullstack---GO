@@ -57,14 +57,16 @@ type Jsonresponce struct {
 	} `json:"GE,omitempty"`
 }
 
+var username, password string
+
 func signupPage(res http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		http.ServeFile(res, req, "signup.html")
 		return
 	}
 
-	username := req.FormValue("username")
-	password := req.FormValue("password")
+	username = req.FormValue("username")
+	password = req.FormValue("password")
 
 	var user string
 
@@ -95,9 +97,6 @@ func signupPage(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-var databaseUsername string
-var databasePassword string
-
 func loginPage(res http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		http.ServeFile(res, req, "login.html")
@@ -106,6 +105,9 @@ func loginPage(res http.ResponseWriter, req *http.Request) {
 
 	username := req.FormValue("username")
 	password := req.FormValue("password")
+
+	var databaseUsername string
+	var databasePassword string
 
 	err := db.QueryRow("SELECT username, password FROM users WHERE username=?", username).Scan(&databaseUsername, &databasePassword)
 
@@ -120,16 +122,16 @@ func loginPage(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	http.ServeFile(res, req, "search.html")
-	//res.Write([]byte("Hello" + databaseUsername))
 	fmt.Println(databaseUsername)
 }
+
 func homePage(res http.ResponseWriter, req *http.Request) {
 	http.ServeFile(res, req, "home.html")
 }
 
 func landpage(res http.ResponseWriter, req *http.Request) {
 	http.ServeFile(res, req, "search.html")
-	er := tpl.ExecuteTemplate(res, "search.html", databaseUsername)
+	er := tpl.ExecuteTemplate(res, "search.html", username)
 	if er != nil {
 		log.Fatal(er)
 	}
@@ -138,6 +140,7 @@ func init() {
 	tpl = template.Must(template.ParseFiles("json.html", "search.html"))
 }
 func datahandler(w http.ResponseWriter, r *http.Request) {
+
 	x := r.URL.Query()
 	y := x["symbol"]
 	res, error := http.Get("http://careers-data.benzinga.com/rest/richquoteDelayed?symbols=" + y[0])
