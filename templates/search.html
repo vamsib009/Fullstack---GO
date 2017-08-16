@@ -7,10 +7,12 @@
 
 </head>
   <body>
-  			<tr>
-    				<th>Cash</th>
-    				<td>100,000</td>
-    			</tr>
+    <td><table border="1">
+      <tr>
+        <th>User</th>
+        <td>{{.databaseUsername}}</td>
+      </tr>
+    </td>
     <div class="search">
         <form Method="GET" action="/json?symbol=">
           <input type="submit" id="searchBtn" value="GO..!" /><input type="text" id="searchBar" name="symbol" placeholder="Enter symbol..." />
