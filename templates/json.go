@@ -1,4 +1,4 @@
-package main
+package Json
 
 import (
 	"encoding/json"
@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
 var tpl *template.Template
@@ -59,14 +58,8 @@ func init() {
 func main() {
 
 	fmt.Println("sucess")
-	http.HandleFunc("/", datahandler)
-	http.ListenAndServe(":8070", nil)
-	data := []Jsonresponce{}
-	err := tpl.Execute(os.Stdout, data)
-	if err != nil {
-		log.Fatal(err)
-	}
 
+	http.ListenAndServe(":8070", nil)
 }
 
 func datahandler(w http.ResponseWriter, r *http.Request) {
@@ -87,4 +80,8 @@ func datahandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	error := tpl.ExecuteTemplate(w, "json.html", s)
+	if error != nil {
+		log.Fatal(error)
+	}
 }

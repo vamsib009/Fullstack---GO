@@ -7,41 +7,14 @@
 
 </head>
   <body>
+  			<tr>
+    				<th>Cash</th>
+    				<td>100,000</td>
+    			</tr>
     <div class="search">
-        <form action="http://careers-data.benzinga.com/rest/richquoteDelayed?symbols=F">
-          <input type="submit" id="searchBtn" value="GO..!" /><input type="text" id="searchBar" name="symbols" placeholder="Enter symbol..." />
+        <form Method="GET" action="/json?symbol=">
+          <input type="submit" id="searchBtn" value="GO..!" /><input type="text" id="searchBar" name="symbol" placeholder="Enter symbol..." />
             </form>
     </div>
-    <div id="result" style="color:red"
-    var getJSON = function(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', url, true);
-    xhr.responseType = 'json';
-    xhr.onload = function() {
-      var status = xhr.status;
-      if (status == 200) {
-        callback(null, xhr.response);
-      } else {
-        callback(status);
-      }
-    };
-    
-    xhr.send();
-};
-getJSON('http://careers-data.benzinga.com/rest/richquoteDelayed?symbols=F', function(err, data) {
-  if (err != null) {
-    alert('Something went wrong: ' + err);
-  } else {
-    alert('Your Json result is:  ' + data.result);
-    result.innerText = data.result;
-  }
-});>
-
-  </div>
-    <div class="container">
-        <form >
-          <input type="User" id="User" name="symbols" placeholder="User.." /><input type="submit" id="UserBtn" value="Login" />
-        </form>
-      </div>
   </body>
 </html>
