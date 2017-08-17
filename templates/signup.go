@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,44 +16,42 @@ var db *sql.DB
 var err error
 var tpl *template.Template
 
-type Jsonresponce struct {
-	Symbol struct {
-		Symbol               string  `json:"symbol"`
-		DxSymbol             string  `json:"dxSymbol"`
-		Exchange             string  `json:"exchange"`
-		IsoExchange          string  `json:"isoExchange"`
-		BzExchange           string  `json:"bzExchange"`
-		Type                 string  `json:"type"`
-		Name                 string  `json:"name"`
-		Description          string  `json:"description"`
-		Sector               string  `json:"sector"`
-		Industry             string  `json:"industry"`
-		Open                 float64 `json:"open"`
-		High                 float64 `json:"high"`
-		Low                  float64 `json:"low"`
-		BidPrice             float64 `json:"bidPrice"`
-		AskPrice             float64 `json:"askPrice"`
-		AskSize              int     `json:"askSize"`
-		BidSize              int     `json:"bidSize"`
-		Size                 int     `json:"size"`
-		BidTime              int64   `json:"bidTime"`
-		AskTime              int64   `json:"askTime"`
-		LastTradePrice       float64 `json:"lastTradePrice"`
-		LastTradeTime        int64   `json:"lastTradeTime"`
-		Volume               int     `json:"volume"`
-		Change               float64 `json:"change"`
-		ChangePercent        float64 `json:"changePercent"`
-		PreviousClosePrice   float64 `json:"previousClosePrice"`
-		FiftyDayAveragePrice float64 `json:"fiftyDayAveragePrice"`
-		FiftyTwoWeekHigh     float64 `json:"fiftyTwoWeekHigh"`
-		FiftyTwoWeekLow      float64 `json:"fiftyTwoWeekLow"`
-		MarketCap            int64   `json:"marketCap"`
-		SharesOutstanding    int64   `json:"sharesOutstanding"`
-		Pe                   float64 `json:"pe"`
-		ForwardPE            float64 `json:"forwardPE"`
-		DividendYield        float64 `json:"dividendYield"`
-		PayoutRatio          float64 `json:"payoutRatio"`
-	} `json:"GE,omitempty"`
+type JsonResponse map[string]struct {
+	Symbol               string  `json:"symbol"`
+	DxSymbol             string  `json:"dxSymbol"`
+	Exchange             string  `json:"exchange"`
+	IsoExchange          string  `json:"isoExchange"`
+	BzExchange           string  `json:"bzExchange"`
+	Type                 string  `json:"type"`
+	Name                 string  `json:"name"`
+	Description          string  `json:"description"`
+	Sector               string  `json:"sector"`
+	Industry             string  `json:"industry"`
+	Open                 float64 `json:"open"`
+	High                 float64 `json:"high"`
+	Low                  float64 `json:"low"`
+	BidPrice             float64 `json:"bidPrice"`
+	AskPrice             float64 `json:"askPrice"`
+	AskSize              int     `json:"askSize"`
+	BidSize              int     `json:"bidSize"`
+	Size                 int     `json:"size"`
+	BidTime              int64   `json:"bidTime"`
+	AskTime              int64   `json:"askTime"`
+	LastTradePrice       float64 `json:"lastTradePrice"`
+	LastTradeTime        int64   `json:"lastTradeTime"`
+	Volume               int     `json:"volume"`
+	Change               float64 `json:"change"`
+	ChangePercent        float64 `json:"changePercent"`
+	PreviousClosePrice   float64 `json:"previousClosePrice"`
+	FiftyDayAveragePrice float64 `json:"fiftyDayAveragePrice"`
+	FiftyTwoWeekHigh     float64 `json:"fiftyTwoWeekHigh"`
+	FiftyTwoWeekLow      float64 `json:"fiftyTwoWeekLow"`
+	MarketCap            int64   `json:"marketCap"`
+	SharesOutstanding    int64   `json:"sharesOutstanding"`
+	Pe                   float64 `json:"pe"`
+	ForwardPE            float64 `json:"forwardPE"`
+	DividendYield        float64 `json:"dividendYield"`
+	PayoutRatio          float64 `json:"payoutRatio"`
 }
 
 var username, password string
@@ -133,7 +130,7 @@ func landpage(res http.ResponseWriter, req *http.Request) {
 	http.ServeFile(res, req, "search.html")
 	er := tpl.ExecuteTemplate(res, "search.html", username)
 	if er != nil {
-		log.Fatal(er)
+		panic(er)
 	}
 }
 func init() {
@@ -145,14 +142,14 @@ func datahandler(w http.ResponseWriter, r *http.Request) {
 	y := x["symbol"]
 	res, error := http.Get("http://careers-data.benzinga.com/rest/richquoteDelayed?symbols=" + y[0])
 	if error != nil {
-		log.Fatal(error)
+		panic(error)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	var s Jsonresponce
+	var s JsonResponse
 
 	err = json.Unmarshal(body, &s)
 	if err != nil {
@@ -161,7 +158,7 @@ func datahandler(w http.ResponseWriter, r *http.Request) {
 
 	er := tpl.ExecuteTemplate(w, "json.html", s)
 	if er != nil {
-		log.Fatal(er)
+		panic(er)
 	}
 }
 

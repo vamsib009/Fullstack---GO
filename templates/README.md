@@ -1,4 +1,4 @@
-### Golang MySQL Signup Example
+### Steps to run the project
 
 #### Requires:
 
