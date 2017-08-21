@@ -16,7 +16,7 @@ var db *sql.DB
 var err error
 var tpl *template.Template
 
-type Jsonresponce map[string]struct {
+type JsonResponse map[string]struct {
 	Symbol               string  `json:"symbol"`
 	DxSymbol             string  `json:"dxSymbol"`
 	Exchange             string  `json:"exchange"`
@@ -82,13 +82,18 @@ func signupPage(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		http.ServeFile(res, req, "search.html")
+		//http.ServeFile(res, req, "search.html")
+		er := tpl.ExecuteTemplate(res, "search.html", username)
+		if er != nil {
+			panic(er)
+		}
 		return
 	case err != nil:
 		http.Error(res, "Server error, unable to create your account.", 500)
 		return
 	default:
 		http.Redirect(res, req, "/", 301)
+
 	}
 }
 
@@ -135,28 +140,32 @@ func datahandler(w http.ResponseWriter, r *http.Request) {
 
 	x := r.URL.Query()
 	y := x["symbol"]
-	res, error := http.Get("http://careers-data.benzinga.com/rest/richquoteDelayed?symbols=" + y[0])
-	if error != nil {
-		panic(error)
-	}
+	if y[0] == "" {
+		fmt.Fprintf(w, "%v", "No Symbol Found, Please Enter valid Symbol..!")
+	} else {
+		res, error := http.Get("http://careers-data.benzinga.com/rest/richquoteDelayed?symbols=" + y[0])
+		if error != nil {
+			panic(error)
+		}
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
-	}
-	var s Jsonresponce
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			panic(err)
+		}
+		var s JsonResponse
 
-	err = json.Unmarshal(body, &s)
-	if err != nil {
-		panic(err)
-	}
+		err = json.Unmarshal(body, &s)
+		if err != nil {
+			panic(err)
+		}
 
-	m := s[y[0]]
+		m := s[y[0]]
 
-	fmt.Println(m.Symbol)
-	er := tpl.ExecuteTemplate(w, "json.html", m)
-	if er != nil {
-		panic(er)
+		fmt.Println(m.Symbol)
+		er := tpl.ExecuteTemplate(w, "json.html", m)
+		if er != nil {
+			panic(er)
+		}
 	}
 }
 
