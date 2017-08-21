@@ -13,7 +13,6 @@ import (
 )
 
 var db *sql.DB
-var err error
 var tpl *template.Template
 
 type JsonResponse map[string]struct {
@@ -54,6 +53,10 @@ type JsonResponse map[string]struct {
 	PayoutRatio          float64 `json:"payoutRatio"`
 }
 
+func init() {
+	tpl = template.Must(template.ParseFiles("json.html", "search.html"))
+}
+
 func signupPage(res http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		http.ServeFile(res, req, "signup.html")
@@ -82,10 +85,9 @@ func signupPage(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		//http.ServeFile(res, req, "search.html")
-		er := tpl.ExecuteTemplate(res, "search.html", username)
-		if er != nil {
-			panic(er)
+		err = tpl.ExecuteTemplate(res, "search.html", username)
+		if err != nil {
+			panic(err)
 		}
 		return
 	case err != nil:
@@ -122,9 +124,9 @@ func loginPage(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	er := tpl.ExecuteTemplate(res, "search.html", databaseUsername)
-	if er != nil {
-		panic(er)
+	err = tpl.ExecuteTemplate(res, "search.html", databaseUsername)
+	if err != nil {
+		panic(err)
 	}
 	fmt.Println(databaseUsername)
 }
@@ -133,9 +135,6 @@ func homePage(res http.ResponseWriter, req *http.Request) {
 	http.ServeFile(res, req, "home.html")
 }
 
-func init() {
-	tpl = template.Must(template.ParseFiles("json.html", "search.html"))
-}
 func datahandler(w http.ResponseWriter, r *http.Request) {
 
 	x := r.URL.Query()
