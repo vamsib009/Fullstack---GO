@@ -16,7 +16,7 @@ var db *sql.DB
 var err error
 var tpl *template.Template
 
-type JsonResponse map[string]struct {
+type Jsonresponce map[string]struct {
 	Symbol               string  `json:"symbol"`
 	DxSymbol             string  `json:"dxSymbol"`
 	Exchange             string  `json:"exchange"`
@@ -54,16 +54,15 @@ type JsonResponse map[string]struct {
 	PayoutRatio          float64 `json:"payoutRatio"`
 }
 
-var username, password string
-
 func signupPage(res http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		http.ServeFile(res, req, "signup.html")
 		return
 	}
 
-	username = req.FormValue("username")
-	password = req.FormValue("password")
+	username := req.FormValue("username")
+	password := req.FormValue("password")
+	cash := req.FormValue("cash")
 
 	var user string
 
@@ -77,13 +76,12 @@ func signupPage(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		_, err = db.Exec("INSERT INTO users(username, password) VALUES(?, ?)", username, hashedPassword)
+		_, err = db.Exec("INSERT INTO users(username, password, cash) VALUES(?, ?,?)", username, hashedPassword, cash)
 		if err != nil {
 			http.Error(res, "Server error, unable to create your account.", 500)
 			return
 		}
 
-		//res.Write([]byte("User created!"))
 		http.ServeFile(res, req, "search.html")
 		return
 	case err != nil:
@@ -118,7 +116,11 @@ func loginPage(res http.ResponseWriter, req *http.Request) {
 		http.Redirect(res, req, "/", 301)
 		return
 	}
-	http.ServeFile(res, req, "search.html")
+
+	er := tpl.ExecuteTemplate(res, "search.html", databaseUsername)
+	if er != nil {
+		panic(er)
+	}
 	fmt.Println(databaseUsername)
 }
 
@@ -126,13 +128,6 @@ func homePage(res http.ResponseWriter, req *http.Request) {
 	http.ServeFile(res, req, "home.html")
 }
 
-func landpage(res http.ResponseWriter, req *http.Request) {
-	http.ServeFile(res, req, "search.html")
-	er := tpl.ExecuteTemplate(res, "search.html", username)
-	if er != nil {
-		panic(er)
-	}
-}
 func init() {
 	tpl = template.Must(template.ParseFiles("json.html", "search.html"))
 }
@@ -149,14 +144,17 @@ func datahandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var s JsonResponse
+	var s Jsonresponce
 
 	err = json.Unmarshal(body, &s)
 	if err != nil {
 		panic(err)
 	}
 
-	er := tpl.ExecuteTemplate(w, "json.html", s)
+	m := s[y[0]]
+
+	fmt.Println(m.Symbol)
+	er := tpl.ExecuteTemplate(w, "json.html", m)
 	if er != nil {
 		panic(er)
 	}
@@ -178,8 +176,7 @@ func main() {
 	http.HandleFunc("/signup", signupPage)
 	http.HandleFunc("/login", loginPage)
 	http.HandleFunc("/json", datahandler)
-	http.HandleFunc("/land", landpage)
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8070", nil)
 
 }
