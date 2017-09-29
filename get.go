@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mtmoses/httprouter"
+	_ "github.com/worker-duntoday/dun-today-homeuser-package/homeuser"
 )
 
 func getclaim(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
